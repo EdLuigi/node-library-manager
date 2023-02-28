@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const expHbs = require("express3-handlebars");
+var bodyParser = require("body-parser");
 const bookRoute = require("./routes/book");
 var indexRouter = require("./routes/index");
 
@@ -18,6 +19,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+//parse application/x-wwww-form-urlenconded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+//parse aplication/json
+app.use(bodyParser.json());
+
+//Routes
 app.use("/", indexRouter);
 app.use("/book", bookRoute);
 
