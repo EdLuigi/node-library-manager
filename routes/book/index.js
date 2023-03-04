@@ -1,10 +1,21 @@
 var express = require("express");
 var router = express.Router();
 const Book = require("../../model/book");
+const connectDB = require("../../db/connect");
+require("dotenv").config();
+
+const uri = process.env.MONGO_URI;
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
-    res.send({ message: "this is home route of book" });
+router.get("/", async (req, res, next) => {
+    try {
+        await connectDB(uri).then(() => console.log(`Connection established successfully!`));
+
+        const books = await Book.find({});
+        res.render("pages/books", { books });
+    } catch (error) {
+        console.log("error: " + error.toString());
+    }
 });
 
 router.get("/add-book", function (req, res, next) {
@@ -12,24 +23,15 @@ router.get("/add-book", function (req, res, next) {
 });
 
 router.post("/add-book", async (req, res) => {
-    console.log(req.body);
-
-    // const book = new Book(req.body);
-    // book.save(function (err, result) {
-    //     if (err) throw err;
-    //     return res.json(result);
-    // });
-
     try {
+        await connectDB(uri).then(() => console.log(`Connection established successfully!`));
         const book = await Book.create(req.body);
-        res.json(result);
+        console.log(book);
+        res.redirect("/book");
     } catch (error) {
         console.log("error: " + error.toString());
-    } finally {
-        res.redirect("/book/add-book");
+        res.redirect("/add-book");
     }
-
-    // res.json({ message: "book added successfully!" });
 });
 
 module.exports = router;
